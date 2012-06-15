@@ -3,8 +3,8 @@ Contributors: silentjohnny
 Donate link: http://notifica.re/donate
 Tags: comments, approve, notification
 Requires at least: 2.8
-Tested up to: 3.3.2
-Stable tag: 0.1.0
+Tested up to: 3.4
+Stable tag: 0.1.1
 License: BSD
 
 Get notified on comments and approve or mark as spam with a simple push of a button from your phone
@@ -12,6 +12,10 @@ Get notified on comments and approve or mark as spam with a simple push of a but
 == Description ==
 
 Get notified on comments and approve or mark as spam with a simple push of a button from your phone
+
+= NOTE = 
+
+Currently, you need a beta-invite for Notificare to actually test the plugin. Sign up for one at http://notifica.re
 
 == Installation ==
 
@@ -33,5 +37,7 @@ It's free for personal use. But of course we like donations. Send candy.
 
 == Changelog ==
 
+= 0.1.1 = 
+* Fixed version number in plugin itself
 = 0.1.0 =
 * Initial version
