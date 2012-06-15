@@ -11,11 +11,15 @@ Get notified on comments and approve or mark as spam with a simple push of a but
 
 == Description ==
 
-Get notified on comments and approve or mark as spam with a simple push of a button from your phone
+If, like us, you are always busy, trying hard to keep your inbox empty, you don't want it to be filled up by emails telling you to login to your WordPress blog and moderate comments. The Notificare plugin and its accompanying iPhone/iPad app keeps YOU in control of your comments! Instead of having to login to WordPress, you can immediately approve a comment or mark it as spam with just a push of a button. 
+
+Even better, WordPress is just one of many services that hook into Notificare. The easy to setup and flexible Service Central lets you manage your alerts in one place and get back in control again. 
+
+Notificare. Get notified. Take action!
 
 = NOTE = 
 
-Currently, you need a beta-invite for Notificare to actually test the plugin. Sign up for one at http://notifica.re
+Currently, we're in private beta, so you need an invite for Notificare to actually test the plugin. Request one at http://notifica.re
 
 == Installation ==
 
@@ -27,7 +31,12 @@ Currently, you need a beta-invite for Notificare to actually test the plugin. Si
 
 = How much does it cost? =
 
-It's free for personal use. But of course we like donations. Send candy.
+It's free for personal use. But of course we like donations. Send candy!
+
+= Can I hook into Notificare myself?
+
+Yes, once we launch Service Central, you can add and enable different kinds of services yourself. We will also provide an SDK for developers, so you can add your own custom services to Notificare.
+
 
 == Screenshots ==
 
