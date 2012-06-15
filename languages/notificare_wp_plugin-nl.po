@@ -1,0 +1,60 @@
+# Notificare WordPress Plugin i18n
+# Copyright (C) 2012 Notificare
+# This file is distributed under the same license as the PACKAGE package.
+# Silentjohnny <joris@notifica.re>, 2012.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Notificare-1.0.0\n"
+"POT-Creation-Date: 2012-06-12 10:00+0200\n"
+"PO-Revision-Date: 2012-06-13 18:00+200\n"
+"Last-Translator: Joris Verbogt <joris@notifica.re>\n"
+"Language-Team: NL <nl@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. (self::PLUGIN_NAME)
+#: classes/notificare/plugin.php:251
+msgid "Comment already approved"
+msgstr "Reactie reeds goedgekeurd"
+
+#. (self::PLUGIN_NAME)
+#: classes/notificare/plugin.php:258
+msgid "Comment approved"
+msgstr "Reactie goedgekeurd"
+
+#. (self::PLUGIN_NAME)
+#: classes/notificare/plugin.php:244
+msgid "Comment deleted"
+msgstr "Reactie verwijderd"
+
+#. (self::PLUGIN_NAME)
+#: classes/notificare/plugin.php:265
+msgid "Comment marked as spam"
+msgstr "Reactie gemarkeerd als spam"
+
+#. (self::PLUGIN_NAME)
+#: classes/notificare/plugin.php:271
+msgid "Comment moved to trash"
+msgstr "Reactie verplaatst naar de prullenbak"
+
+#. (self::PLUGIN_NAME)
+#: classes/notificare/plugin.php:234
+msgid "Comment not found"
+msgstr "Reactie niet gevonden"
+
+#. (self::PLUGIN_NAME)
+#: classes/notificare/plugin.php:276 classes/notificare/plugin.php:298
+msgid "Unknown action"
+msgstr "Onbekende actie"
+
+#. (self::PLUGIN_NAME)
+#: classes/notificare/plugin.php:225
+msgid "Validation failed"
+msgstr "Validatie mislukt"
+
+#: classes/notificare/plugin.php:323
+msgid "You do not have sufficient permissions to access this page."
+msgstr "Je hebt onvoldoende rechten om deze pagina te bekijken.`"
