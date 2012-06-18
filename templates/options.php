@@ -20,6 +20,14 @@
 					<span class="description"><?php _e('Get a user token from Notificare Dashboard', NotificarePlugin::PLUGIN_NAME) ?></span>
 				</td>
 			</tr>
+			<tr valign="top">
+				<td>
+					<label>
+					<input name="permalink" type="checkbox" id="permalink" value="1" <?php if ( get_option(NotificarePlugin::PLUGIN_NAME . '_permalink') == '1' ) { ?> checked="checked" <?php } ?> />
+					<?php _e('Use Permalink', NotificarePlugin::PLUGIN_NAME) ?>
+					</label>
+				</td>
+			</tr>
 		</table>
 	<?php submit_button(); ?>
 	</form>
