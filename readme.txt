@@ -4,7 +4,7 @@ Donate link: http://notifica.re/donate
 Tags: comments, approve, notification
 Requires at least: 2.8
 Tested up to: 3.4
-Stable tag: 0.1.3
+Stable tag: 0.1.4
 License: BSD
 
 Get notified on comments and approve or mark as spam with a simple push of a button from your phone
@@ -46,6 +46,8 @@ Yes, once we launch Service Central, you can add and enable different kinds of s
 
 == Changelog ==
 
+= 0.1.4 =
+* Added delete & trash actions
 = 0.1.3 = 
 * Made permanent URLs optional
 * Added uninstall hook, now deactivate does not remove options and tokens anymore

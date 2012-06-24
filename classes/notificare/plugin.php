@@ -3,7 +3,7 @@
 Plugin Name: Notificare
 Plugin URI: http://notifica.re/apps/wordpress
 Description: Get notified on comments and approve or mark as spam with a simple push of a button from your phone
-Version: 0.1.3
+Version: 0.1.4
 Author: silentjohnny
 License: 
 
@@ -77,6 +77,7 @@ class NotificarePlugin {
 		
 		// Hook up to the admin menu
 		add_action( 'admin_menu', array( $this, 'addOptionsPage' ) );
+		// Update rewrite rules when updating permalink option
 		add_action( 'update_option_' . self::PLUGIN_NAME . '_permalink', array( $this, 'flushRewriteRules' ) );
 	    
 		// Hook up to the post_comment 
@@ -207,6 +208,8 @@ class NotificarePlugin {
 	/**
 	 * Add our query parameters
 	 * WordPress Filter
+	 * @param {Array} The query parameters so far
+	 * @return {Array} Our query parameters added
 	 */
 	public function addQueryVars( $query_vars ) {
 		$my_query_vars = array(
@@ -219,10 +222,10 @@ class NotificarePlugin {
 
 	/**
 	 * Send JSON output
-	 * @param {String}
+	 * @param {Mixed} 
 	 */
 	protected function sendJSON( $data ) {
-		if ( isset( $data['code'] ) ) {
+		if ( is_array( $data ) && isset( $data['code'] ) ) {
 			header( "HTTP/1.0 {$data['code']}" );
 		}
 		$charset = get_option( 'blog_charset' );
@@ -254,7 +257,7 @@ class NotificarePlugin {
 			);
 	    }
 
-	    // does the comment exist?
+	    // does the comment (still) exist?
 	    if ( !$comment = get_comment( $comment_id ) )
 	    {
 			return array(
@@ -315,7 +318,7 @@ class NotificarePlugin {
 			$token = get_query_var( 'token' );
 			$comment_id = get_query_var( 'comment_id' );
 		
-			if ( ( 'approve' == $action || 'spam' == $action ) && $token && $comment_id ) {
+			if ( ( 'approve' == $action || 'spam' == $action || 'trash' == $action || 'delete' == $action ) && $token && $comment_id ) {
 				$result = $this->moderate( $action, $comment_id, $token );
 				$this->sendJSON( $result );
 			} else {
