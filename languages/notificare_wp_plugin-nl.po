@@ -21,9 +21,19 @@ msgid "Comment already approved"
 msgstr "Reactie reeds goedgekeurd"
 
 #. (self::PLUGIN_NAME)
+#: classes/notificare/plugin.php:295
+msgid "Comment already moderated"
+msgstr "Reactie reeds gemodereerd"
+
+#. (self::PLUGIN_NAME)
 #: classes/notificare/plugin.php:258
 msgid "Comment approved"
 msgstr "Reactie goedgekeurd"
+
+#. (self::PLUGIN_NAME)
+#: classes/notificare/plugin.php:340
+msgid "Comment approved and replied to"
+msgstr "Reactie goedgekeurd en beantwoord"
 
 #. (self::PLUGIN_NAME)
 #: classes/notificare/plugin.php:244

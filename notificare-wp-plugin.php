@@ -3,7 +3,7 @@
 Plugin Name: Notificare
 Plugin URI: http://notifica.re/apps/wordpress
 Description: Get notified on comments and approve or mark as spam with a simple push of a button from your phone
-Version: 0.1.2
+Version: 0.2.0
 Author: silentjohnny
 License: 
 
@@ -19,6 +19,7 @@ THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED WAR
  * Initialization, get singleton instance of the plugin
  */
 function notificare_wp_plugin_init() {
+	NotificarePlugin::versionCheck();
 	$plugin = NotificarePlugin::getInstance( dirname( __FILE__ ) . '/templates', basename( dirname( __FILE__ ) ) . '/languages');
 }
 
@@ -36,7 +37,15 @@ function notificare_wp_plugin_deactivate() {
 	NotificarePlugin::deactivate();
 }
 
+/**
+ * Call plugin uninstall
+ */
+function notificare_wp_plugin_uninstall() {
+	NotificarePlugin::uninstall();
+}
+
 // Add initialization and activation hooks
 add_action( 'init', 'notificare_wp_plugin_init' );
 register_activation_hook( __FILE__, 'notificare_wp_plugin_activate' );
 register_deactivation_hook( __FILE__, 'notificare_wp_plugin_deactivate' );
+register_uninstall_hook( __FILE__, 'notificare_wp_plugin_uninstall' );
