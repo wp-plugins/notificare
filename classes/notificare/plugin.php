@@ -3,7 +3,7 @@
 Plugin Name: Notificare
 Plugin URI: http://notifica.re/apps/wordpress
 Description: Get notified on comments and approve or mark as spam with a simple push of a button from your phone
-Version: 0.1.4
+Version: 0.2.0
 Author: silentjohnny
 License: 
 
@@ -11,6 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 /**
  * A Singleton class for the Notificare Wordpress plugin
  */
@@ -35,6 +36,11 @@ class NotificarePlugin {
 	 * Max length of content to send in notification
 	 */
 	const MAX_CONTENT_LENGTH = 140;
+	
+	/**
+	 * Version of DB schema, used by sanity check
+	 */
+	const DB_VERSION = '2';
 	
 	/**
 	 * The Singleton instance
@@ -168,26 +174,28 @@ class NotificarePlugin {
 	/**
 	 * Hook function for comment post
 	 *
-	 * Send a notification when somebody posts a comment.
+	 * Send a notification when somebody posts a comment that is not approved yet
 	 * @param {int} The ID of the comment
 	 */
 	public function handleComment( $comment_id ) {
-		$tokens = $this->generateTokens( $comment_id );
 		$comment = get_comment( $comment_id );
-		$post = get_post( $comment->comment_post_ID );
-		$payload = array(
-			'hook' => 'comment_post',
-			'post_title' => $post->post_title,
-			'comment_content' => $this->truncateContent( $comment->comment_content ),
-			'comment_author' => $comment->comment_author,
-			'post_url' => get_permalink( $comment->comment_post_ID ),
-			'approve_url' => $this->buildCallbackURL( 'approve', $comment_id, $tokens['approve_token'] ),
-			'spam_url' => $this->buildCallbackURL( 'spam', $comment_id, $tokens['spam_token'] ),
-			'delete_url' => $this->buildCallbackURL( 'delete', $comment_id, $tokens['delete_token'] ),
-			'trash_url' => $this->buildCallbackURL( 'trash', $comment_id, $tokens['trash_token'] )
-		);
-		$client = new NotificareClient( get_option( self::PLUGIN_NAME . '_applicationkey' ), get_option( self::PLUGIN_NAME . '_usertoken' ) );
-		$client->sendNotification( $payload );
+		if ($comment && !$comment->approved) {
+			$tokens = $this->generateTokens( $comment_id );
+			$post = get_post( $comment->comment_post_ID );
+			$payload = array(
+				'hook' => 'comment_post',
+				'post_title' => $post->post_title,
+				'comment_content' => $this->truncateContent( $comment->comment_content ),
+				'comment_author' => $comment->comment_author,
+				'post_url' => get_permalink( $comment->comment_post_ID ),
+				'approve_url' => $this->buildCallbackURL( 'approve', $comment_id, $tokens['approve_token'] ),
+				'spam_url' => $this->buildCallbackURL( 'spam', $comment_id, $tokens['spam_token'] ),
+				'delete_url' => $this->buildCallbackURL( 'delete', $comment_id, $tokens['delete_token'] ),
+				'trash_url' => $this->buildCallbackURL( 'trash', $comment_id, $tokens['trash_token'] )
+			);
+			$client = new NotificareClient( get_option( self::PLUGIN_NAME . '_applicationkey' ), get_option( self::PLUGIN_NAME . '_usertoken' ) );
+			$client->sendNotification( $payload );
+		}
 	}
 	
 	/*
@@ -215,7 +223,8 @@ class NotificarePlugin {
 		$my_query_vars = array(
 			'notificare_action',
 			'comment_id',
-			'token'
+			'token',
+			'message'
 		);
 		return array_merge( $my_query_vars, $query_vars );
 	}
@@ -237,6 +246,37 @@ class NotificarePlugin {
 	      echo $json->encode( $data );
 	    }
 	}
+
+	/**
+	 * Reply on the comment
+	 *
+	 * Reply on the comment that has just been approved
+	 * @param {int} The ID of the comment
+	 * @param {String} The message to put in the reply
+	 */
+	protected function replyComment( $comment_id, $reply ) {
+		$comment = get_comment( $comment_id );
+		if ($comment && $comment->comment_approved) {
+			$time = current_time('mysql');
+
+			$data = array(
+			    'comment_post_ID' => $comment->comment_post_ID,
+			    'comment_author' => 'admin',
+			    'comment_author_email' => get_option( 'admin_email' ),
+			    'comment_author_url' => get_option( 'siteurl' ),
+			    'comment_content' => $reply,
+			    'comment_type' => '',
+			    'comment_parent' => $comment_id,
+			    'user_id' => 1,
+			    'comment_author_IP' => $_SERVER['REMOTE_ADDR'],
+			    'comment_agent' => $_SERVER['HTTP_USER_AGENT'],
+			    'comment_date' => $time,
+			    'comment_approved' => 1,
+			);
+
+			wp_insert_comment($data);
+		}
+	}
 	
 	/**
 	 * Do the actual moderation
@@ -244,18 +284,25 @@ class NotificarePlugin {
 	 * @param {int} The comment ID
 	 * @param {String} The token
 	 */
-	protected function moderate( $action, $comment_id, $token ) {
+	protected function moderate( $action, $comment_id, $token, $message ) {
 	    // First get the stored token from database (if any)
- 		$sth = $this->dbh->prepare( "SELECT `{$action}_token` FROM `{$this->tableName}` WHERE comment_id=%d", $comment_id );
-	    $stored_token = $this->dbh->get_var( $sth );
+ 		$sth = $this->dbh->prepare( "SELECT * FROM `{$this->tableName}` WHERE comment_id=%d", $comment_id );
+	    $data = $this->dbh->get_row( $sth, ARRAY_A );
 
 	    // then compare it with the sent token. If mismatch, send error.
-	    if ( strcmp( $token, $stored_token ) ) { 
+	    if ( strcmp( $token, $data["{$action}_token"] ) ) { 
 			return array(
 	        	'message' => __( 'Validation failed', self::PLUGIN_NAME),
 				'code' => '400 Bad Request'
 			);
 	    }
+		// Check if token is already used
+		if ( $data["used"] == 1 ) {
+			return array(
+	        	'message' => __( 'Comment already moderated', self::PLUGIN_NAME),
+				'code' => '400 Bad Request'
+			);
+		}
 
 	    // does the comment (still) exist?
 	    if ( !$comment = get_comment( $comment_id ) )
@@ -266,6 +313,9 @@ class NotificarePlugin {
 			);
 	    }
 
+		// Update the token as used
+		$this->dbh->update( $this->tableName, array( "used" => 1 ), array( "{$action}_token" => $data["{$action}_token"] ) );
+		
 	    switch ( $action )
 	    {
 	        case 'delete':
@@ -284,9 +334,16 @@ class NotificarePlugin {
 	            else
 	            {
 	                wp_set_comment_status( $comment_id, $action );
-	                return array( 
-						'message' => __( 'Comment approved', self::PLUGIN_NAME )
-					);
+					if ($message) {
+						$this->replyComment( $comment_id, $message );
+		                return array( 
+							'message' => __( 'Comment approved and replied to', self::PLUGIN_NAME )
+						);
+					} else {
+		                return array( 
+							'message' => __( 'Comment approved', self::PLUGIN_NAME )
+						);
+					}
 	            }
 	            break;
 	        case 'spam':
@@ -317,9 +374,10 @@ class NotificarePlugin {
 		if ( $action ) {
 			$token = get_query_var( 'token' );
 			$comment_id = get_query_var( 'comment_id' );
+			$message = get_query_var( 'message' );
 		
 			if ( ( 'approve' == $action || 'spam' == $action || 'trash' == $action || 'delete' == $action ) && $token && $comment_id ) {
-				$result = $this->moderate( $action, $comment_id, $token );
+				$result = $this->moderate( $action, $comment_id, $token, $message );
 				$this->sendJSON( $result );
 			} else {
 				$this->sendJSON( 
@@ -389,11 +447,11 @@ class NotificarePlugin {
 		add_option( self::PLUGIN_NAME . '_applicationkey' );
 		add_option( self::PLUGIN_NAME . '_usertoken' );
 		add_option( self::PLUGIN_NAME . '_permalink', '0' );
+		add_option( self::PLUGIN_NAME . '_db_version', '0' );
 
 		$dbh = $GLOBALS['wpdb'];
 		$tableName = $dbh->prefix . self::TABLE_PREFIX . self::TOKEN_TABLE;
-		if ( !$dbh->query( "SHOW TABLES FROM `{$dbh->dbname}` LIKE '{$tableName}'" ) )
-	    {
+		if ( !$dbh->query( "SHOW TABLES FROM `{$dbh->dbname}` LIKE '{$tableName}'" ) ) {
 	        $dbh->query( "CREATE TABLE `{$tableName}` (
 	          `id` int(11) NOT NULL AUTO_INCREMENT,
 	          `comment_id` int(11) NOT NULL,
@@ -401,9 +459,18 @@ class NotificarePlugin {
 	          `trash_token` char(40) COLLATE utf8_unicode_ci NOT NULL,
 	          `spam_token` char(40) COLLATE utf8_unicode_ci NOT NULL,
 	          `delete_token` char(40) COLLATE utf8_unicode_ci NOT NULL,
-	          PRIMARY KEY (`id`)
+	          `used` int(1) NOT NULL DEFAULT '0',
+			  PRIMARY KEY (`id`),
+			  UNIQUE KEY `approve_token` (`approve_token`),
+			  UNIQUE KEY `trash_token` (`trash_token`),
+			  UNIQUE KEY `spam_token` (`spam_token`),
+			  UNIQUE KEY `delete_token` (`delete_token`),
+			  KEY `comment_id` (`comment_id`)
 	        ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" );
-	    }
+			update_option( self::PLUGIN_NAME . '_db_version', self::DB_VERSION );
+		} else {
+			self::updateDatabase();
+		}
 	}
 	
 	/**
@@ -416,12 +483,69 @@ class NotificarePlugin {
 	}
 
 	/**
+	 * Version check
+	 */
+	static public function versionCheck() {
+		$db_version = get_option( self::PLUGIN_NAME . '_db_version' );
+		if ( !$db_version || $db_version < self::DB_VERSION ) {
+			self::updateDatabase();
+		}
+	}
+	
+	/**
+	 * Update the DB schema to the current version
+	 */
+	static protected function updateDatabase() {
+		// is DB schema up to date?
+		$dbh = $GLOBALS['wpdb'];
+		$tableName = $dbh->prefix . self::TABLE_PREFIX . self::TOKEN_TABLE;
+		$columns = $dbh->get_results( "SHOW COLUMNS FROM `{$tableName}` WHERE field='used'" );
+
+		if ( count( $columns ) == 0 ) {
+			$dbh->query( "ALTER TABLE `{$tableName}` ADD COLUMN `used` int(1) NOT NULL DEFAULT '0'" );
+		}
+
+		$check = array(
+			'uniqueKeys' => array(
+				'approve_token' => false,
+				'trash_token' => false,
+				'spam_token' => false,
+				'delete_token' => false
+			),
+			'keys' => array(
+				'comment_id' => false
+			)
+		);
+
+		$indexes = $dbh->get_results( "SHOW INDEX FROM `{$tableName}`", ARRAY_A );
+		foreach ( $indexes as $index ) {
+			if ( $index['non_unique'] == 1 ) {
+				$check['keys'][$index['key_name']] = true;
+			} else {
+				$check['uniqueKeys'][$index['key_name']] = true;
+			}
+		}
+		foreach ( $check['keys'] as $key => $status) {
+			if (!$status) {
+				$dbh->query( "ALTER TABLE `{$tableName}` ADD KEY `{$key}` (`{$key}`)" );
+			}
+		}
+		foreach ( $check['uniqueKeys'] as $key => $status) {
+			if (!$status) {
+				$dbh->query( "ALTER TABLE `{$tableName}` ADD UNIQUE KEY `{$key}` (`{$key}`)" );
+			}
+		}
+		update_option( self::PLUGIN_NAME . '_db_version', self::DB_VERSION );
+	}
+	
+	/**
 	 * Uninstall the plugin, remove tables and options
 	 */
 	static public function uninstall() {
 		delete_option( self::PLUGIN_NAME . '_applicationkey' );
 		delete_option( self::PLUGIN_NAME . '_usertoken' );
 		delete_option( self::PLUGIN_NAME . '_permalink' );
+		delete_option( self::PLUGIN_NAME . '_db_version' );
 		
 		// Remove the rewrite rule on deactivation
 		$wp_rewrite = $GLOBALS['wp_rewrite'];

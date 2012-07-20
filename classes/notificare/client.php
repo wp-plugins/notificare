@@ -3,7 +3,7 @@
 Plugin Name: Notificare
 Plugin URI: http://notifica.re/apps/wordpress
 Description: Get notified on comments and approve or mark as spam with a simple push of a button from your phone
-Version: 0.1.4
+Version: 0.2.0
 Author: silentjohnny
 License: 
 
@@ -20,8 +20,8 @@ class NotificareClient {
 	/**
 	 * Base URL of the API
 	 */
-	const URI = 'http://apps.notifica.re';
-	
+	const URI = 'https://apps.notifica.re';
+
 	/**
 	 * The service URI
 	 */

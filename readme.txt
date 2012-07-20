@@ -4,7 +4,7 @@ Donate link: http://notifica.re/donate
 Tags: comments, approve, notification
 Requires at least: 2.8
 Tested up to: 3.4
-Stable tag: 0.1.4
+Stable tag: 0.2.0
 License: BSD
 
 Get notified on comments and approve or mark as spam with a simple push of a button from your phone
@@ -46,6 +46,9 @@ Yes, once we launch Service Central, you can add and enable different kinds of s
 
 == Changelog ==
 
+= 0.2.0 =
+* Codes are now disabled after use
+* Callback can now include a message to add as a reply to the (approved) comment
 = 0.1.4 =
 * Added delete & trash actions
 = 0.1.3 = 
