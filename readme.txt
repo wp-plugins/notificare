@@ -4,7 +4,7 @@ Donate link: http://notifica.re/donate
 Tags: comments, approve, notification
 Requires at least: 2.8
 Tested up to: 3.4
-Stable tag: 0.2.0
+Stable tag: 0.3.0
 License: BSD
 
 Get notified on comments and approve or mark as spam with a simple push of a button from your phone
@@ -17,15 +17,16 @@ Even better, WordPress is just one of many services that hook into Notificare. T
 
 Notificare. Get notified. Take action!
 
-= NOTE = 
-
-Currently, we're in private beta, so you need an invite for Notificare to actually test the plugin. Request one at http://notifica.re
-
 == Installation ==
 
 1. Upload the plugin zipfile to your Wordpress installation
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Sign up for an API key and get your user token at http://notifica.re/
+2. Activate the plugin through the 'Plugins' menu in WordPress
+3. Download the Notificare App from the Appstore
+4. Sign up for Notificare
+5. Log in to your Notificare dashboard at https://notifica.re/admin 
+6. Create a new WordPress service, pick a name and sound
+7. Copy your Service Key your User Token into the Settings panel of the WordPress plugin
+8. Post a comment and see what happens!
 
 == Frequently Asked Questions ==
 
@@ -46,6 +47,9 @@ Yes, once we launch Service Central, you can add and enable different kinds of s
 
 == Changelog ==
 
+= 0.3.0 = 
+* Updated labels
+* Updated instructions
 = 0.2.0 =
 * Codes are now disabled after use
 * Callback can now include a message to add as a reply to the (approved) comment
