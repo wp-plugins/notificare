@@ -7,10 +7,10 @@
 
 		<table class="form-table">
 			<tr valign="top">
-				<th scope="row"><label for="applicationkey"><?php _e('Application Key', NotificarePlugin::PLUGIN_NAME) ?></label></th>
+				<th scope="row"><label for="applicationkey"><?php _e('Service Key', NotificarePlugin::PLUGIN_NAME) ?></label></th>
 				<td>
 					<input name="applicationkey" type="text" id="applicationkey" value="<?php echo get_option(NotificarePlugin::PLUGIN_NAME . '_applicationkey'); ?>" class="regular-text" />
-					<span class="description"><?php _e('Get an application key from Notificare Dashboard', NotificarePlugin::PLUGIN_NAME) ?></span></td>
+					<span class="description"><?php _e('Get a service key from Notificare Dashboard', NotificarePlugin::PLUGIN_NAME) ?></span></td>
 				</td>
 			</tr>
 			<tr valign="top">
