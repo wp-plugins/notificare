@@ -34,7 +34,7 @@ Notificare. Get notified. Take action!
 
 It's free for personal use. But of course we like donations. Send candy!
 
-= Can I hook into Notificare myself?
+= Can I hook into Notificare myself? =
 
 Yes, once we launch Service Central, you can add and enable different kinds of services yourself. We will also provide an SDK for developers, so you can add your own custom services to Notificare.
 
