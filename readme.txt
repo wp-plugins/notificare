@@ -4,7 +4,7 @@ Donate link: http://notifica.re/donate
 Tags: comments, approve, notification
 Requires at least: 2.8
 Tested up to: 3.4
-Stable tag: 0.4.0
+Stable tag: 0.3.1
 License: BSD
 
 Get notified on comments and approve or mark as spam with a simple push of a button from your phone.
