@@ -3,7 +3,7 @@
 Plugin Name: Notificare
 Plugin URI: http://notifica.re/apps/wordpress
 Description: Get notified on comments and approve or mark as spam with a simple push of a button from your phone
-Version: 0.3.1
+Version: 0.4.0
 Author: silentjohnny
 License: 
 
@@ -87,7 +87,7 @@ class NotificarePlugin {
 		add_action( 'update_option_' . self::PLUGIN_NAME . '_permalink', array( $this, 'flushRewriteRules' ) );
 	    
 		// Hook up to the post_comment 
-		add_action( 'comment_post', array( $this, 'handleComment' ) );
+		add_action( 'comment_post', array( $this, 'handleComment' ), 10, 2 );
 		
 		// Hook up to requests coming in
 		add_filter( 'query_vars', array( $this, 'addQueryVars' ) );
@@ -176,25 +176,29 @@ class NotificarePlugin {
 	 *
 	 * Send a notification when somebody posts a comment that is not approved yet
 	 * @param {int} The ID of the comment
+	 * @param {String} The approval status
 	 */
-	public function handleComment( $comment_id ) {
-		$comment = get_comment( $comment_id );
-		if ($comment && !$comment->approved) {
-			$tokens = $this->generateTokens( $comment_id );
-			$post = get_post( $comment->comment_post_ID );
-			$payload = array(
-				'hook' => 'comment_post',
-				'post_title' => $post->post_title,
-				'comment_content' => $this->truncateContent( $comment->comment_content ),
-				'comment_author' => $comment->comment_author,
-				'post_url' => get_permalink( $comment->comment_post_ID ),
-				'approve_url' => $this->buildCallbackURL( 'approve', $comment_id, $tokens['approve_token'] ),
-				'spam_url' => $this->buildCallbackURL( 'spam', $comment_id, $tokens['spam_token'] ),
-				'delete_url' => $this->buildCallbackURL( 'delete', $comment_id, $tokens['delete_token'] ),
-				'trash_url' => $this->buildCallbackURL( 'trash', $comment_id, $tokens['trash_token'] )
-			);
-			$client = new NotificareClient( get_option( self::PLUGIN_NAME . '_applicationkey' ), get_option( self::PLUGIN_NAME . '_usertoken' ) );
-			$client->sendNotification( $payload );
+	public function handleComment( $comment_id, $status = 0 ) {
+		if ($status == 0 || ($status == 'spam' && get_option( self::PLUGIN_NAME . '_notify_spam' ) == '1') ) {
+			error_log('Sending notification because status=' . $status . ' and notify spam = '.get_option( self::PLUGIN_NAME . '_notify_spam' ));
+			$comment = get_comment( $comment_id );
+			if ($comment && !$comment->approved) {
+				$tokens = $this->generateTokens( $comment_id );
+				$post = get_post( $comment->comment_post_ID );
+				$payload = array(
+					'hook' => 'comment_post',
+					'post_title' => $post->post_title,
+					'comment_content' => $this->truncateContent( $comment->comment_content ),
+					'comment_author' => $comment->comment_author,
+					'post_url' => get_permalink( $comment->comment_post_ID ),
+					'approve_url' => $this->buildCallbackURL( 'approve', $comment_id, $tokens['approve_token'] ),
+					'spam_url' => $this->buildCallbackURL( 'spam', $comment_id, $tokens['spam_token'] ),
+					'delete_url' => $this->buildCallbackURL( 'delete', $comment_id, $tokens['delete_token'] ),
+					'trash_url' => $this->buildCallbackURL( 'trash', $comment_id, $tokens['trash_token'] )
+				);
+				$client = new NotificareClient( get_option( self::PLUGIN_NAME . '_applicationkey' ), get_option( self::PLUGIN_NAME . '_usertoken' ) );
+				$client->sendNotification( $payload );
+			}
 		}
 	}
 	
@@ -421,6 +425,11 @@ class NotificarePlugin {
 		} else {
 			update_option( self::PLUGIN_NAME . '_permalink', '0' );
 		}
+		if ( isset( $_REQUEST['notify_spam'] ) ) {
+			update_option( self::PLUGIN_NAME . '_notify_spam', $_REQUEST['notify_spam'] );
+		} else {
+			update_option( self::PLUGIN_NAME . '_notify_spam', '0' );
+		}
 		include( $this->templateDir . '/options.php' );
 	}
 	
@@ -448,7 +457,8 @@ class NotificarePlugin {
 		add_option( self::PLUGIN_NAME . '_usertoken' );
 		add_option( self::PLUGIN_NAME . '_permalink', '0' );
 		add_option( self::PLUGIN_NAME . '_db_version', '0' );
-
+		add_option( self::PLUGIN_NAME . '_notify_spam', '0' );
+		
 		$dbh = $GLOBALS['wpdb'];
 		$tableName = $dbh->prefix . self::TABLE_PREFIX . self::TOKEN_TABLE;
 		if ( !$dbh->query( "SHOW TABLES FROM `{$dbh->dbname}` LIKE '{$tableName}'" ) ) {
@@ -546,6 +556,7 @@ class NotificarePlugin {
 		delete_option( self::PLUGIN_NAME . '_usertoken' );
 		delete_option( self::PLUGIN_NAME . '_permalink' );
 		delete_option( self::PLUGIN_NAME . '_db_version' );
+		delete_option( self::PLUGIN_NAME . '_notify_spam' );
 		
 		// Remove the rewrite rule on deactivation
 		$wp_rewrite = $GLOBALS['wp_rewrite'];

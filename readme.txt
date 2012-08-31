@@ -4,7 +4,7 @@ Donate link: http://notifica.re/donate
 Tags: comments, approve, notification
 Requires at least: 2.8
 Tested up to: 3.4
-Stable tag: 0.3.1
+Stable tag: 0.4.0
 License: BSD
 
 Get notified on comments and approve or mark as spam with a simple push of a button from your phone.
@@ -53,7 +53,9 @@ Yes, once we launch Service Central, you can add and enable different kinds of s
 3. Notificare iPhone app settings
 
 == Changelog ==
-
+= 0.4.0 =
+* Clean output buffer before sending JSON
+* Added Spam option
 = 0.3.1 =
 * Updated instructions
 * Added banner

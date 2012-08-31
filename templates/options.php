@@ -21,14 +21,22 @@
 				</td>
 			</tr>
 			<tr valign="top">
-				<td>
+				<td colspan="2">
 					<label>
 					<input name="permalink" type="checkbox" id="permalink" value="1" <?php if ( get_option(NotificarePlugin::PLUGIN_NAME . '_permalink') == '1' ) { ?> checked="checked" <?php } ?> />
 					<?php _e('Use Permalink', NotificarePlugin::PLUGIN_NAME) ?>
 					</label>
 				</td>
 			</tr>
-		</table>
+			<tr valign="top">
+				<td colspan="2">
+					<label>
+					<input name="notify_spam" type="checkbox" id="notify_spam" value="1" <?php if ( get_option(NotificarePlugin::PLUGIN_NAME . '_notify_spam') == '1' ) { ?> checked="checked" <?php } ?> />
+					<?php _e('Notify me of all comments, even if marked as spam', NotificarePlugin::PLUGIN_NAME) ?>
+					</label>
+				</td>
+			</tr>
+			</table>
 	<?php submit_button(); ?>
 	</form>
 </div>
