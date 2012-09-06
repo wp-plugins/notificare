@@ -4,20 +4,19 @@
 
 	<form method="post">
 	<?php settings_fields(NotificarePlugin::PLUGIN_NAME); ?>
-
 		<table class="form-table">
 			<tr valign="top">
 				<th scope="row"><label for="applicationkey"><?php _e('Service Key', NotificarePlugin::PLUGIN_NAME) ?></label></th>
 				<td>
 					<input name="applicationkey" type="text" id="applicationkey" value="<?php echo get_option(NotificarePlugin::PLUGIN_NAME . '_applicationkey'); ?>" class="regular-text" />
-					<span class="description"><?php _e('Get a service key from Notificare Dashboard', NotificarePlugin::PLUGIN_NAME) ?></span></td>
+					<span class="description"><?php printf( __('Copy your service key from <a href="%s">Notificare Dashboard</a>', NotificarePlugin::PLUGIN_NAME), NotificarePlugin::DASHBOARD_URL ); ?></span></td>
 				</td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="usertoken"><?php _e('User Token', NotificarePlugin::PLUGIN_NAME) ?></label></th>
 				<td>
 					<input name="usertoken" type="text" id="usertoken"  value="<?php echo get_option(NotificarePlugin::PLUGIN_NAME . '_usertoken'); ?>" class="regular-text" />
-					<span class="description"><?php _e('Get a user token from Notificare Dashboard', NotificarePlugin::PLUGIN_NAME) ?></span>
+					<span class="description"><?php printf( __('Copy your user token from <a href="%s">Notificare Dashboard</a>', NotificarePlugin::PLUGIN_NAME), NotificarePlugin::DASHBOARD_URL ); ?></span>
 				</td>
 			</tr>
 			<tr valign="top">

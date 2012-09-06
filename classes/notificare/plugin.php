@@ -3,7 +3,7 @@
 Plugin Name: Notificare
 Plugin URI: http://notifica.re/apps/wordpress
 Description: Get notified on comments and approve or mark as spam with a simple push of a button from your phone
-Version: 0.4.1
+Version: 0.4.2
 Author: silentjohnny
 License: 
 
@@ -41,6 +41,11 @@ class NotificarePlugin {
 	 * Version of DB schema, used by sanity check
 	 */
 	const DB_VERSION = '2';
+	
+	/**
+	 * URL to link to for API keys
+	 */
+	const DASHBOARD_URL = 'https://notifica.re/dashboard/services';
 	
 	/**
 	 * The Singleton instance
@@ -88,10 +93,8 @@ class NotificarePlugin {
 	    
 		// Hook up to the post_comment 
 		add_action( 'comment_post', array( $this, 'handleComment' ), 10, 2 );
-		
 		// Hook up to requests coming in
-		add_filter( 'query_vars', array( $this, 'addQueryVars' ) );
-		add_action( 'template_redirect', array( $this, 'handleCallback' ) );
+		add_action( 'parse_query', array( $this, 'handleCallback' ) );
 	}
 	
 	/**
@@ -215,22 +218,6 @@ class NotificarePlugin {
 		}
 		$wp_rewrite = $GLOBALS['wp_rewrite'];
 		$wp_rewrite->flush_rules();
-	}
-	
-	/**
-	 * Add our query parameters
-	 * WordPress Filter
-	 * @param {Array} The query parameters so far
-	 * @return {Array} Our query parameters added
-	 */
-	public function addQueryVars( $query_vars ) {
-		$my_query_vars = array(
-			'notificare_action',
-			'comment_id',
-			'token',
-			'message'
-		);
-		return array_merge( $my_query_vars, $query_vars );
 	}
 
 	/**
@@ -373,12 +360,12 @@ class NotificarePlugin {
 	/**
 	 * Handle callback POST from Notificare
 	 */
-	public function handleCallback() {
-		$action = get_query_var( 'notificare_action' );
+	public function handleCallback( $query ) {
+		$action = $query->get( 'notificare_action' );
 		if ( $action ) {
-			$token = get_query_var( 'token' );
-			$comment_id = get_query_var( 'comment_id' );
-			$message = get_query_var( 'message' );
+			$token = $query->get( 'token' );
+			$comment_id = $query->get( 'comment_id' );
+			$message = $query->get( 'message' );
 		
 			if ( ( 'approve' == $action || 'spam' == $action || 'trash' == $action || 'delete' == $action ) && $token && $comment_id ) {
 				$result = $this->moderate( $action, $comment_id, $token, $message );
@@ -394,8 +381,7 @@ class NotificarePlugin {
 			exit();
 		}
 	}
-		
-
+	
 	/*
 	 * Admin stuff
 	 */
