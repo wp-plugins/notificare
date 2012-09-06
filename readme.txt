@@ -53,6 +53,8 @@ Yes, once we launch Service Central, you can add and enable different kinds of s
 3. Notificare iPhone app settings
 
 == Changelog ==
+= 0.4.5 = 
+* Fixed saving of options
 = 0.4.4 =
 * Fixed query parsing
 = 0.4.2 =

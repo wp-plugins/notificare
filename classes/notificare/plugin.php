@@ -3,7 +3,7 @@
 Plugin Name: Notificare
 Plugin URI: http://notifica.re/apps/wordpress
 Description: Get notified on comments and approve or mark as spam with a simple push of a button from your phone
-Version: 0.4.4
+Version: 0.4.5
 Author: silentjohnny
 License: 
 
@@ -401,21 +401,23 @@ class NotificarePlugin {
 		if ( !current_user_can( 'manage_options' ) )  {
 			wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 		}
-		if ( isset( $_REQUEST['applicationkey'] ) ) {
-			update_option( self::PLUGIN_NAME . '_applicationkey', $_REQUEST['applicationkey'] );
-		}
-		if ( isset( $_REQUEST['usertoken'] ) ) {
-			update_option( self::PLUGIN_NAME . '_usertoken', $_REQUEST['usertoken'] );
-		}
-		if ( isset( $_REQUEST['permalink'] ) ) {
-			update_option( self::PLUGIN_NAME . '_permalink', $_REQUEST['permalink'] );
-		} else {
-			update_option( self::PLUGIN_NAME . '_permalink', '0' );
-		}
-		if ( isset( $_REQUEST['notify_spam'] ) ) {
-			update_option( self::PLUGIN_NAME . '_notify_spam', $_REQUEST['notify_spam'] );
-		} else {
-			update_option( self::PLUGIN_NAME . '_notify_spam', '0' );
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update' ) {
+			if ( isset( $_REQUEST['applicationkey'] ) ) {
+				update_option( self::PLUGIN_NAME . '_applicationkey', $_REQUEST['applicationkey'] );
+			}
+			if ( isset( $_REQUEST['usertoken'] ) ) {
+				update_option( self::PLUGIN_NAME . '_usertoken', $_REQUEST['usertoken'] );
+			}
+			if ( isset( $_REQUEST['permalink'] ) ) {
+				update_option( self::PLUGIN_NAME . '_permalink', $_REQUEST['permalink'] );
+			} else {
+				update_option( self::PLUGIN_NAME . '_permalink', '0' );
+			}
+			if ( isset( $_REQUEST['notify_spam'] ) ) {
+				update_option( self::PLUGIN_NAME . '_notify_spam', $_REQUEST['notify_spam'] );
+			} else {
+				update_option( self::PLUGIN_NAME . '_notify_spam', '0' );
+			}
 		}
 		include( $this->templateDir . '/options.php' );
 	}
