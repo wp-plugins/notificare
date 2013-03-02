@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: Notificare
-Plugin URI: http://notifica.re/apps/wordpress
+Plugin URI: http://app.notifica.re/services/wordpress
 Description: Get notified on comments and approve or mark as spam with a simple push of a button from your phone
-Version: 0.4.5
+Version: 0.4.6
 Author: silentjohnny
 License: 
 
@@ -45,7 +45,7 @@ class NotificarePlugin {
 	/**
 	 * URL to link to for API keys
 	 */
-	const DASHBOARD_URL = 'https://notifica.re/dashboard/services';
+	const DASHBOARD_URL = 'https://app.notifica.re/dashboard/services';
 	
 	/**
 	 * The Singleton instance
@@ -92,7 +92,7 @@ class NotificarePlugin {
 		add_action( 'update_option_' . self::PLUGIN_NAME . '_permalink', array( $this, 'flushRewriteRules' ) );
 	    
 		// Hook up to the post_comment 
-		add_action( 'comment_post', array( $this, 'handleComment' ), 10, 2 );
+		add_action( 'comment_post', array( $this, 'handleComment' ), 100, 2 );
 		// Hook up to requests coming in
 		add_filter( 'query_vars', array( $this, 'addQueryVars' ) );
 		add_action( 'parse_query', array( $this, 'handleCallback' ) );

@@ -1,10 +1,10 @@
 === Notificare. Get notified. Take action. ===
 Contributors: silentjohnny
-Donate link: http://notifica.re/donate
+Donate link: http://app.notifica.re/donate
 Tags: comments, approve, notification
 Requires at least: 2.8
 Tested up to: 3.4
-Stable tag: 0.4.5
+Stable tag: 0.4.6
 License: BSD
 
 Get notified on comments and approve or mark as spam with a simple push of a button from your phone.
@@ -23,7 +23,7 @@ Notificare. Get notified. Take action!
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Download the Notificare App from the [Appstore](http://itunes.apple.com/us/app/notificare/id549981058)
 4. Sign up for Notificare
-5. Log in to your Notificare [Dashboard](https://notifica.re/admin) 
+5. Log in to your Notificare [Dashboard](https://app.notifica.re/dashboard) 
 6. Create a new WordPress service, pick a name and sound
 7. Copy your Service Key your User Token into the Settings panel of the WordPress plugin
 8. Post a comment and see what happens!
@@ -53,6 +53,9 @@ Yes, once we launch Service Central, you can add and enable different kinds of s
 3. Notificare iPhone app settings
 
 == Changelog ==
+= 0.4.6 = 
+* Added comment_post handler later
+* Changed URLs to correctly point to http://app.notifica.re
 = 0.4.5 = 
 * Fixed saving of options
 = 0.4.4 =
