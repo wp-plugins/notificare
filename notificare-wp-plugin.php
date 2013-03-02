@@ -2,8 +2,8 @@
 /*
 Plugin Name: Notificare
 Plugin URI: http://app.notifica.re/services/wordpress
-Description: Get notified on comments and approve or mark as spam with a simple push of a button from your phone. If you don't have a Notificare account yet, <a href="https://notifica.re/sign-up">get one first</a>. Otherwise, go straight to your <a href="https://notifica.re/dashboard/services">Dashboard</a> and create a WordPress service. Then, copy the service key and user token to the <a href="options-general.php?page=notificare_wp_plugin">Notificare Plugin Admin page</a>. 
-Version: 0.4.6
+Description: Get notified on comments and approve or mark as spam with a simple push of a button from your phone. If you don't have a Notificare account yet, <a href="https://app.notifica.re/sign-up">get one first</a>. Otherwise, go straight to your <a href="https://app.notifica.re/dashboard/services">Dashboard</a> and create a WordPress service. Then, copy the service key and user token to the <a href="options-general.php?page=notificare_wp_plugin">Notificare Plugin Admin page</a>. 
+Version: 0.4.7
 Author: silentjohnny
 License: 
 
